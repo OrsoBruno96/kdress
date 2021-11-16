@@ -1,14 +1,24 @@
-#!/usr/bin/python
-import sys
-import os
+#!/usr/bin/env python
 import subprocess
-
-if (len(sys.argv) < 4):
-	print 'Usage: ./kdress <vmlinuz> <vmlinux> <System.map>\n'
-	sys.exit(-1)
-
-subprocess.call(['./kunpress', sys.argv[1], sys.argv[2]])
-subprocess.call(['./build_ksyms', sys.argv[2], '/tmp/.vmlinux.abc', sys.argv[3]])
-subprocess.call(['/bin/mv', '/tmp/.vmlinux.abc', sys.argv[2]])
+from os.path import abspath, dirname, join
+from shutil import move
+from argparse import ArgumentParser
 
 
+def main():
+    parser = ArgumentParser()
+    parser.add_argument("--bzimage", type=str, help="Compressed kernel image")
+    parser.add_argument("--output", type=str, help="Path to output vmlinux")
+    parser.add_argument("--kallsyms", type=str, help="Path to System Map (kallsyms)")
+
+    args = parser.parse_args()
+
+    kdress_dir = dirname(abspath(__file__))
+    tmp_filename = "/tmp/.vmlinux.abc"
+    subprocess.call([join(kdress_dir, "kunpress"), args.bzimage, args.output])
+    subprocess.call([join(kdress_dir, "build_ksyms"), args.output, tmp_filename, args.kallsyms])
+    move(tmp_filename, args.output)
+
+
+if __name__ == "__main__":
+    main()
