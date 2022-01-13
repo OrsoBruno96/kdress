@@ -1,8 +1,15 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 import subprocess
-from os.path import abspath, dirname, join
+from os.path import abspath, dirname, join, islink
+from os import readlink
 from shutil import move
 from argparse import ArgumentParser
+
+
+def get_abspath(maybe_link: str):
+    while islink(maybe_link):
+        maybe_link = readlink(maybe_link)
+    return maybe_link
 
 
 def main():
@@ -13,7 +20,7 @@ def main():
 
     args = parser.parse_args()
 
-    kdress_dir = dirname(abspath(__file__))
+    kdress_dir = dirname(get_abspath(abspath(__file__)))
     tmp_filename = "/tmp/.vmlinux.abc"
     subprocess.call([join(kdress_dir, "kunpress"), args.bzimage, args.output])
     subprocess.call([join(kdress_dir, "build_ksyms"), args.output, tmp_filename, args.kallsyms])
