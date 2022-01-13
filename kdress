@@ -7,9 +7,9 @@ from argparse import ArgumentParser
 
 def main():
     parser = ArgumentParser()
-    parser.add_argument("--bzimage", type=str, help="Compressed kernel image")
-    parser.add_argument("--output", type=str, help="Path to output vmlinux")
-    parser.add_argument("--kallsyms", type=str, help="Path to System Map (kallsyms)")
+    parser.add_argument("--bzimage", type=str, help="Compressed kernel image", required=True)
+    parser.add_argument("--output", type=str, help="Path to output vmlinux", required=True)
+    parser.add_argument("--kallsyms", type=str, help="Path to System Map (kallsyms)", required=True)
 
     args = parser.parse_args()
 
